@@ -1,12 +1,11 @@
-version: "3.7"
-
+version: '3.7'
 services:
   db:
-    image: postgres:16
+    image: 'postgres:16'
     shm_size: 1g
     restart: unless-stopped
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - 'db_data:/var/lib/postgresql/data'
     expose:
       - 5432
     environment:
@@ -14,11 +13,12 @@ services:
       POSTGRES_DB: windmill
       POSTGRES_USER: $SERVICE_USER_POSTGRES
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      test:
+        - CMD-SHELL
+        - 'pg_isready -U $${POSTGRES_USER}'
       interval: 10s
       timeout: 5s
       retries: 5
-
   windmill_server:
     image: $WM_IMAGE
     pull_policy: always
@@ -26,78 +26,72 @@ services:
     expose:
       - 8000
     environment:
-      - DATABASE_URL=$SERVICE_INTERNAL_URL_DB
+      - 'DATABASE_URL=postgres://$SERVICE_USER_POSTGRES:$SERVICE_PASSWORD_POSTGRES@$SERVICE_INTERNAL_URL_DB/windmill?sslmode=disable'
       - MODE=server
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - worker_logs:/tmp/windmill/logs
-
+      - 'worker_logs:/tmp/windmill/logs'
   windmill_worker:
     image: $WM_IMAGE
     pull_policy: always
     deploy:
       resources:
         limits:
-          cpus: "1"
+          cpus: '1'
           memory: 2048M
     restart: unless-stopped
     environment:
-      - DATABASE_URL=$SERVICE_INTERNAL_URL_DB
+      - 'DATABASE_URL=postgres://$SERVICE_USER_POSTGRES:$SERVICE_PASSWORD_POSTGRES@$SERVICE_INTERNAL_URL_DB/windmill?sslmode=disable'
       - MODE=worker
       - WORKER_GROUP=default
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - worker_dependency_cache:/tmp/windmill/cache
-      - worker_logs:/tmp/windmill/logs
-
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - 'worker_dependency_cache:/tmp/windmill/cache'
+      - 'worker_logs:/tmp/windmill/logs'
   windmill_worker_native:
     image: $WM_IMAGE
     pull_policy: always
     deploy:
       resources:
         limits:
-          cpus: "0.1"
+          cpus: '0.1'
           memory: 128M
     restart: unless-stopped
     environment:
-      - DATABASE_URL=$SERVICE_INTERNAL_URL_DB
+      - 'DATABASE_URL=postgres://$SERVICE_USER_POSTGRES:$SERVICE_PASSWORD_POSTGRES@$SERVICE_INTERNAL_URL_DB/windmill?sslmode=disable'
       - MODE=worker
       - WORKER_GROUP=native
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - worker_logs:/tmp/windmill/logs
-
+      - 'worker_logs:/tmp/windmill/logs'
   lsp:
-    image: ghcr.io/windmill-labs/windmill-lsp:latest
+    image: 'ghcr.io/windmill-labs/windmill-lsp:latest'
     pull_policy: always
     restart: unless-stopped
     expose:
       - 3001
     volumes:
-      - lsp_cache:/root/.cache
-
+      - 'lsp_cache:/root/.cache'
   multiplayer:
-    image: ghcr.io/windmill-labs/windmill-multiplayer:latest
+    image: 'ghcr.io/windmill-labs/windmill-multiplayer:latest'
     deploy:
       replicas: 0
     restart: unless-stopped
     expose:
       - 3002
-
 networks:
   default:
     name: coolify
     external: true
-
 volumes:
-  db_data:
-  worker_dependency_cache:
-  worker_logs:
-  lsp_cache:
+  db_data: null
+  worker_dependency_cache: null
+  worker_logs: null
+  lsp_cache: null

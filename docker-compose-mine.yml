@@ -90,10 +90,6 @@ networks:
 
 volumes:
   db_data:
-    external: true
   worker_dependency_cache:
-    external: true
   worker_logs:
-    external: true
   lsp_cache:
-    external: true

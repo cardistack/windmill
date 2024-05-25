@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.337.1](https://github.com/windmill-labs/windmill/compare/v1.337.0...v1.337.1) (2024-05-25)
+
+
+### Bug Fixes
+
+* improve concurrency re-scheduling at scale ([f2d9c3c](https://github.com/windmill-labs/windmill/commit/f2d9c3c77729fe32366a1c0628d5c0af4d603dff))
+* improve concurrency re-scheduling at scale ([e187fa6](https://github.com/windmill-labs/windmill/commit/e187fa6263100cb26a24726123bcc3bbe641a6e8))
+
 ## [1.337.0](https://github.com/windmill-labs/windmill/compare/v1.336.1...v1.337.0) (2024-05-25)
 
 
